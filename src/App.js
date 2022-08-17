@@ -8,6 +8,9 @@ function App() {
   const [result, setResult] = useState(false);
   const [squid, setSquid] = useState("");
   const [key, setKey] = useState([]);
+  const [line, setLine] = useState(1);
+  const [disableSubmit, setDisableSubmit] = useState(true);
+  const [arrayLen, setArrayLen] = useState(5);
   console.log(key);
   useEffect(() => {
     let len = word.length;
@@ -17,7 +20,9 @@ function App() {
 
     setSquid(word[len]);
   }, []);
+  console.log({ arrayLen });
 
+  ////entered key
   const handleKey = (item) => {
     if (item.id === "del" && key.length > 0) {
       const newItem = key.pop();
@@ -28,7 +33,7 @@ function App() {
         return [newArray];
       });
     }
-    if (key.length < 5 && item.value !== "DEL") {
+    if (key.length < arrayLen && item.value !== "DEL") {
       console.log("not del", item.value);
       return setKey((prev) => [...prev, item]);
     }
@@ -46,13 +51,19 @@ function App() {
     if (squid === string) {
       console.log("match", squid);
       return setResult(true);
+    } else {
+      setLine((prev) => prev + 1);
+
+      setArrayLen((prev) => prev + 5);
+      console.log({ line });
+      return;
     }
 
     return;
   };
   return (
     <div className="game_container">
-      <h1>chosen {fiveLetter}</h1>
+      <h1>chosen {fiveLetter.substring(key.length - 5, key.length)}</h1>
       <h1>word {squid}</h1>
       {result && <h1>YOU WIN</h1>}
       <div
@@ -108,7 +119,7 @@ function App() {
       </div>
       <div className="action_wrapper">
         <button
-          disabled={key.length < 5 ? true : false}
+          disabled={key.length < arrayLen ? true : false}
           onClick={() => handleSumit()}
           type="submit"
           className="action_submit"
