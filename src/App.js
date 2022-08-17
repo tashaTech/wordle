@@ -1,39 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { apiRequest } from "./services";
 import { word } from "./data";
-import { Button, Grid, GridList } from "@material-ui/core";
+import { keyboard } from "./data";
 import "./App.css";
 function App() {
-  const keyboard = [
-    { id: "q", value: "Q" },
-    { id: "w", value: "W" },
-    { id: "e", value: "E" },
-    { id: "r", value: "R" },
-    { id: "t", value: "T" },
-
-    { id: "a", value: "A" },
-    { id: "b", value: "B" },
-    { id: "c", value: "C" },
-    { id: "d", value: "D" },
-    { id: "f", value: "F" },
-    { id: "g", value: "G" },
-    { id: "h", value: "H" },
-    { id: "i", value: "I" },
-    { id: "j", value: "J" },
-    { id: "k", value: "K" },
-    { id: "l", value: "L" },
-    { id: "m", value: "M" },
-    { id: "n", value: "N" },
-    { id: "o", value: "O" },
-    { id: "p", value: "P" },
-    { id: "s", value: "S" },
-    { id: "u", value: "U" },
-    { id: "x", value: "X" },
-    { id: "y", value: "Y" },
-    { id: "z", value: "Z" },
-    { id: "enter", value: "ENTER" },
-    { id: "del", value: "DEL" },
-  ];
+  const [fiveLetter, setFiveLetter] = useState("");
+  const [result, setResult] = useState(false);
   const [squid, setSquid] = useState("");
   const [key, setKey] = useState([]);
   console.log(key);
@@ -56,13 +28,33 @@ function App() {
         return [newArray];
       });
     }
-    if (key.length < 5 && item.value !== "DEL" && item.value !== "ENTER") {
+    if (key.length < 5 && item.value !== "DEL") {
       console.log("not del", item.value);
       return setKey((prev) => [...prev, item]);
     }
   };
+
+  ////////HANDLE sUBMIT
+  const handleSumit = () => {
+    let len = key.length;
+    let string = "";
+    for (let i = 0; i < len; i++) {
+      string += key[i].value;
+      console.log({ string, squid });
+    }
+    setFiveLetter(string);
+    if (squid === string) {
+      console.log("match", squid);
+      return setResult(true);
+    }
+
+    return;
+  };
   return (
     <div className="game_container">
+      <h1>chosen {fiveLetter}</h1>
+      <h1>word {squid}</h1>
+      {result && <h1>YOU WIN</h1>}
       <div
         className="game_relative
       
@@ -82,8 +74,21 @@ function App() {
             ))}
           <div className="game_wrapper_absolute">
             {key.map((k, i) => (
-              <div className=" word_selected " key={i}>
+              <div
+                style={{
+                  backgroundColor:
+                    squid.split("").indexOf(k.value) === i
+                      ? "green"
+                      : squid.split("").indexOf(k.value) !== i &&
+                        squid.includes(k.value)
+                      ? "orange"
+                      : "grey",
+                }}
+                className=" word_selected "
+                key={i}
+              >
                 {k?.value}
+                {console.log(squid.split("").indexOf(k.value), i)}
               </div>
             ))}
           </div>
@@ -95,12 +100,21 @@ function App() {
           <button
             onClick={(e) => handleKey(item)}
             className="letter "
-            style={{ width: item.id === "enter" && "8rem" }}
             key={item.id}
           >
             {item.value}
           </button>
         ))}
+      </div>
+      <div className="action_wrapper">
+        <button
+          disabled={key.length < 5 ? true : false}
+          onClick={() => handleSumit()}
+          type="submit"
+          className="action_submit"
+        >
+          Submit
+        </button>
       </div>
     </div>
   );
